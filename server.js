@@ -40,24 +40,23 @@ app.get('/api/timestamp', (req, res) => {
   res.json(jsonFromDate(date))
 })
 
-// 
+// get time from :date_string
 app.get('/api/timestamp/:date_string', (req, res) => {
   const dateString = req.params.date_string;
-
-  // milliseconds
-  const dateParsed = parseFloat(dateString);
-  console.log(dateParsed)
-  if (Number.isInteger(dateParsed)) {
-    res.json(jsonFromDate(new Date(dateParsed)));
-    return
-  }
-
-  // valid ISO date format
   const time = Date.parse(dateString);
-  if (isNaN(time)) {
-    res.json({ error: "Invalid Date" });
+
+  if (!isNaN(time)) {
+    // valid ISO string
+    res.json(jsonFromDate(new Date(time)));
   } else {
-    res.json(jsonFromDate(new Date(time)))
+    // time is NaN: check if integer
+    const dateParsed = parseFloat(dateString);
+    if (Number.isInteger(dateParsed)) {
+      res.json(jsonFromDate(new Date(dateParsed)));
+    } else {
+      // not an integer
+      res.json({ error: "Invalid Date" });
+    }
   }
 
 })
